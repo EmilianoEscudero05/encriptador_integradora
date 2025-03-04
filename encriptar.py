@@ -1,6 +1,10 @@
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import os
+from rich.progress import track
+from rich.console import Console
+import time
+
 def encriptar():
     # solicito el núero de bits que tendrá la llave
     try:
@@ -32,38 +36,45 @@ def encriptar():
     cipher = AES.new(key, AES.MODE_EAX)
     nonce = cipher.nonce
 
-    #guardando la llave para futuras desencirptaciones (codigo de chat :,v)
-
-
-    prefix = "key"
-    extension = ".txt"
-
-
-    num = 1
-    while os.path.exists(f"{prefix}{num}{extension}"):
-        num += 1
-
-
-    filename = f"{prefix}{num}{extension}"
-
-    with open(filename, "wb") as k:
-        k.write(key)
-
-    #fin del codigo de chat Bv
-
+   
     #guardo el texto cifrado en una variable y el tag en otra
-    cifrado, tag = cipher.encrypt_and_digest(data)
+
+    for i in track(range(1), description="Encriptando..."):
+        cifrado, tag = cipher.encrypt_and_digest(data)
+    
 
     #guardando las variables en un archivo.
     encriptado_nombre = "encrypted_"+ nombre
 
     if os.path.isfile(encriptado_nombre):
-        print("El archivo ya existe")
+        Console().print("El archivo ya existe", style="bold red")
+        exit()
     else:
         with open(encriptado_nombre, "wb") as f:
             f.write(tag)
             f.write(nonce)
             f.write(cifrado)
+        Console().print("Archivo encriptado de manera exitosa", style="bold green")
+
+        #guardando la llave para futuras desencirptaciones (codigo de chat :,v)
+
+
+        prefix = "key"
+        extension = ".txt"
+
+
+        num = 1
+        while os.path.exists(f"{prefix}{num}{extension}"):
+            num += 1
+
+
+        filename = f"{prefix}{num}{extension}"
+
+        with open(filename, "wb") as k:
+            k.write(key)
+
+        #fin del codigo de chat Bv
+
 
 
 
